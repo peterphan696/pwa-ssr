@@ -38,3 +38,16 @@
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
 }
+#categories_home .category-content{
+    display: -ms-flexbox;
+    display: flex;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+.category-content .category-item-container {
+    margin: 0 5px;
+    text-align: center;
+}
+.category-content .category-item .category-des {
+    margin: 10px 0;
+}

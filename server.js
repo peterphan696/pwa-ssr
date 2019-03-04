@@ -22,6 +22,12 @@ app.prepare()
             app.render(req, res, actualPage, queryParams)
         })
 
+        server.get('/products/:cat', (req, res) => {
+            const actualPage = '/products'
+            const queryParams = {cat: req.params.cat}
+            app.render(req, res, actualPage, queryParams)
+        })
+
         server.get('/*', (req, res) => {
             return handle(req, res)
         })

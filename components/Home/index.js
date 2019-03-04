@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "../Layout";
 import Banner from "./Banner";
+import Category from "./Category";
 import ProductList from './ProductList'
 import fetch from "isomorphic-unfetch";
 import './style.css'
@@ -20,12 +21,13 @@ class Home extends React.Component{
         return {...data}
     }
 
-    render() {
+    render() { //console.log(this.props.home.homecategories);
         return (
             <Layout header={{
                 title : 'Home'
             }}>
                 <Banner data={this.props.home.homebanners}/>
+                <Category data={this.props.home.homecategories}/>
                 <ProductList data={this.props.home.homeproductlists}/>
             </Layout>
         );
