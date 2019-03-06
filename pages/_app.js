@@ -22,11 +22,9 @@ Router.events.on('routeChangeError', () => Identify.hideLoading())
 export default class MyApp extends App {
     static async getInitialProps ({ Component, router, ctx }) {
         let pageProps = {}
-        console.log(ctx)
         if (Component.getInitialProps) {
             pageProps = await Component.getInitialProps(ctx)
         }
-
         return { pageProps }
     }
 

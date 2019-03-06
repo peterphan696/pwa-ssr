@@ -53,3 +53,4 @@ var DEFAULT_COLORS = {
     status_bar_text: '#000000',
     loading_color: '#000000',
 };
+module.exports = {SMCONFIGS,DEFAULT_COLORS}

@@ -13,7 +13,7 @@ class ProductList extends React.Component{
             let img = item.images[0].url;
             return(
                 <div className="product-item" key={item.entity_id}>
-                    <Link href={`/product?id=${item.entity_id}`} as={`/product/${item.url_path}`}>
+                    <Link href={`/product?id=${item.entity_id}`} as={`/product/${item.url_path}`} prefetch>
                         <a>
                             <div>
                                 <div className="product-img">
@@ -39,7 +39,6 @@ class ProductList extends React.Component{
         const {data} = this.props
         let productList = data.homeproductlists.map(item => {
             if(item.product_array.length < 1) return null;
-            console.log(item)
             return (
                 <div key={item.productlist_id} className="default-productlist-tapita">
                     <div className="default-productlist-header flex" style={{margin:10}}>
