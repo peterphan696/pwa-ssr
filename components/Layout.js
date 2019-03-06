@@ -16,13 +16,13 @@ const Layout = props => {
             <div className="app-header">
                 <AppBar/>
             </div>
-            <div className="app-body" style={{marginTop:55}}>
+            <div className="app-body" style={{marginTop:55,paddingTop:10}}>
                 {props.children}
             </div>
             <div className="app-loading" style={{display:'none'}} id="app-loading">
                 <Loading/>
             </div>
-            <script type="application/javascript" src="/static/config.js"/>
+            {/* <script type="application/javascript" src="/static/config.js"/> */}
         </div>
     )
 }

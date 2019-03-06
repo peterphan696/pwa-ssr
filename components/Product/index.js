@@ -13,6 +13,7 @@
 import React from 'react'
 import Layout from '../Layout'
 import fetch from "isomorphic-unfetch";
+import {Loading} from "../Loading";
 class Product extends React.Component {
 
     state = {
@@ -27,24 +28,40 @@ class Product extends React.Component {
         })
     }
 
-    static async getInitialProps(context) {
-        let id = context.query.id
+    static async getInitialProps({req,query}) {
+        let id = query.id
+        console.log(req)
+        const isServer = !!req
+        console.log('getInitialProps called:', isServer ? 'server' : 'client')
         const res = await fetch('https://cody.pwa-commerce.com/simiconnector/rest/v2/products/'+id);
         const data = await res.json()
         return {...data}
     }
 
     renderContent = (data) => {
-        console.log(data)
+        if(!data) return <Loading/>
         return (
             <div className="product-detail container">
                 <div className="row">
                     <div className="col-xs-12 col-sm-6">
-                        <div className="product-detail-img">
-                            <img className="img-fluid" style={{height:330,objectFit:'contain'}} src={data.images[0].url} alt={data.name}/>
+                        <div className="product-detail-img" style={{marginBottom:10}}>
+                            <img className="img-fluid" style={{width:330,height:330,objectFit:'contain',border:'1px solid #eee'}} src={data.images[0].url} alt={data.name}/>
                         </div>
                     </div>
-
+                    <div className="col-xs-12 col-sm-6">
+                        <div className="product-detail-info">
+                            <div className="product-name" style={{fontSize:18,fontWeight:700}}>{data.name}</div>
+                            <div className="product-sku">sku : {data.sku}</div> 
+                        </div>
+                    </div>
+                    <div className="col-sm-12">
+                        <div className="product-accordion" style={{marginTop:10}}>
+                            <div id="description">
+                                <div className="item-title" style={{fontSize:18,fontWeight:700}}>Description</div>
+                                <div className="item-content">{data.description}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

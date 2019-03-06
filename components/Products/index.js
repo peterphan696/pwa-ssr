@@ -90,7 +90,7 @@ class Products extends React.Component {
             let img = item.images[0].url;
             return (
                 <div className="product-item tapita-product-grid-item" key={itemKey}>
-                    <Link href={`/product?id=${item.entity_id}`} as={`/product/${item.url_path}`}>
+                    <Link href={`/product?id=${item.entity_id}`} as={`/product/${item.request_path}`}>
                         <a>
                             <div className="product-img">
                                 <img src={img} alt={item.name}/>

@@ -1,43 +1,85 @@
 const express = require('express')
 const next = require('next')
+const LRUCache = require('lru-cache')
 
+const port = parseInt(process.env.PORT, 10) || 3100
 const dev = process.env.NODE_ENV !== 'production'
-const app = next({dev})
+const app = next({ dev })
 const handle = app.getRequestHandler()
 
-app.prepare()
-    .then(() => {
-        const server = express()
 
-        server.get('/p/:id', (req, res) => {
-            const actualPage = '/post'
-            const queryParams = {title: req.params.id}
-            app.render(req, res, actualPage, queryParams)
-        })
+// This is where we cache our rendered HTML pages
+const ssrCache = new LRUCache({
+  length: function (n, key) {
+    return n.toString().length + key.toString().length
+  },
+  max: 100 * 1000 * 1000, // 100MB cache soft limit
+  maxAge: 1000 * 60 * 60 // 1hour
+})
 
-        server.get('/product/:id', (req, res) => {
-            const actualPage = '/product'
-            const queryParams = {id: req.params.id}
-            console.log(req.params)
-            app.render(req, res, actualPage, queryParams)
-        })
+app.prepare().then(() => {
+  const server = express()
 
-        server.get('/products/:cat', (req, res) => {
-            const actualPage = '/products'
-            const queryParams = {cat: req.params.cat}
-            app.render(req, res, actualPage, queryParams)
-        })
+  // Use the `renderAndCache` utility defined below to serve pages
+  server.get('/', (req, res) => {
+    renderAndCache(req, res, '/')
+  })
 
-        server.get('/*', (req, res) => {
-            return handle(req, res)
-        })
+  server.get('/product/:id', (req, res) => {
+    const queryParams = { id: req.params.id }
+    renderAndCache(req, res, '/product', queryParams)
+  })
 
-        server.listen(3100, (err) => {
-            if (err) throw err
-            console.log('> Ready on http://localhost:3100')
-        })
-    })
-    .catch((ex) => {
-        console.error(ex.stack)
-        process.exit(1)
-    })
+  server.get('/products/:cat', (req, res) => {
+    const actualPage = '/products'
+    const queryParams = {cat: req.params.cat}
+    app.render(req, res, actualPage, queryParams)
+})
+
+  server.get('*', (req, res) => {
+    return handle(req, res)
+  })
+
+  server.listen(port, err => {
+    if (err) throw err
+    console.log(`> Ready on http://localhost:${port}`)
+  })
+})
+
+/*
+ * NB: make sure to modify this to take into account anything that should trigger
+ * an immediate page change (e.g a locale stored in req.session)
+ */
+function getCacheKey (req) {
+  return `${req.url}`
+}
+
+async function renderAndCache (req, res, pagePath, queryParams) {
+  const key = getCacheKey(req)
+
+  // If we have a page in the cache, let's serve it
+  if (ssrCache.has(key)) {
+    res.setHeader('x-cache', 'HIT')
+    res.send(ssrCache.get(key))
+    return
+  }
+
+  try {
+    // If not let's render the page into HTML
+    const html = await app.renderToHTML(req, res, pagePath, queryParams)
+
+    // Something is wrong with the request, let's skip the cache
+    if (res.statusCode !== 200) {
+      res.send(html)
+      return
+    }
+
+    // Let's cache this page
+    ssrCache.set(key, html)
+
+    res.setHeader('x-cache', 'MISS')
+    res.send(html)
+  } catch (err) {
+    app.renderError(err, req, res, pagePath, queryParams)
+  }
+}

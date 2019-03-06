@@ -6,7 +6,6 @@ import ProductList from './ProductList'
 import fetch from "isomorphic-unfetch";
 import './style.css'
 import {Loading} from "../Loading";
-
 /**
  * Created by PhpStorm.
  * User: Peter
@@ -15,13 +14,15 @@ import {Loading} from "../Loading";
  */
 class Home extends React.Component{
     state = {data:null}
-    static async getInitialProps() {
+    static async getInitialProps(context) {
+        console.log(context)
         const res = await fetch('https://cody.pwa-commerce.com/simiconnector/rest/v2/homes');
         const data = await res.json()
         return {...data}
     }
 
-    render() { //console.log(this.props.home.homecategories);
+
+    render() {
         return (
             <Layout header={{
                 title : 'Home'
