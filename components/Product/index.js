@@ -30,7 +30,6 @@ class Product extends React.Component {
 
     static async getInitialProps({req,query}) {
         let id = query.id
-        console.log(req)
         const isServer = !!req
         console.log('getInitialProps called:', isServer ? 'server' : 'client')
         const res = await fetch('https://cody.pwa-commerce.com/simiconnector/rest/v2/products/'+id);

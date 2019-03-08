@@ -13,7 +13,7 @@ class ProductList extends React.Component{
             let img = item.images[0].url;
             return(
                 <div className="product-item" key={item.entity_id}>
-                    <Link href={`/product?id=${item.entity_id}`} as={`/product/${item.url_path}`} prefetch>
+                    <Link href={`/product?id=${item.entity_id}`} as={`/product/${item.entity_id}`} prefetch>
                         <a>
                             <div>
                                 <div className="product-img">
